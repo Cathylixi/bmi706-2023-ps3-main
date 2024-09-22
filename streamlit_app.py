@@ -11,6 +11,7 @@ import streamlit as st
 
 @st.cache
 def load_data():    #my work for problem 1
+    
     ## {{ CODE HERE }} ##
     cancer_df = pd.read_csv("https://raw.githubusercontent.com/hms-dbmi/bmi706-2022/main/cancer_data/cancer_ICD10.csv").melt(  # type: ignore
         id_vars=["Country", "Year", "Cancer", "Sex"],
