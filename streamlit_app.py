@@ -44,14 +44,14 @@ st.write("## Age-specific cancer mortality rates")
 
 ### P2.1 ###
 # replace with st.slider
-year = st.slider('Select Year', min_value=df['Year'].min(), max_value=df['Year'].max(), value=df['Year'].min())
+year = st.slider('Year', min_value=df['Year'].min(), max_value=df['Year'].max(), value=df['Year'].min())
 subset = df[df['Year'] == year]
 ### P2.1 ###
 
 
 ### P2.2 ###
 # replace with st.radio
-sex = st.radio("Select Sex", options= ['F','M'])
+sex = st.radio("Sex", options= ['F','M'])
 subset = df[df['Sex'] == sex]
 
 ### P2.2 ###
@@ -69,15 +69,16 @@ countries = [
     "Thailand",
     "Turkey",
 ]
-selected_countries = st.multiselect('Select Countries', options=subset['Country'].unique(), default=countries)
-subset = subset[subset['Country'].isin(selected_countries)]
+countries_subset = st.multiselect('Countries', options=subset['Country'].unique(), default=countries)
+subset = subset[subset['Country'].isin(countries_subset)]
 ### P2.3 ###
 
 
 ### P2.4 ###
 # replace with st.selectbox
 cancer = subset['Cancer'].unique()
-subset = subset[subset['Cancer'] == st.selectbox('Cancer Type', options=cancer)]
+cancer_type = st.selectbox('Cancer', options=cancer)
+subset = subset[subset['Cancer'] == cancer_type]
 ### P2.4 ###
 
 
@@ -93,24 +94,14 @@ ages = [
     "Age >64",
 ]
 
-chart = alt.Chart(subset).mark_bar().encode(
-    x=alt.X("Age", sort=ages),
-    y=alt.Y("Rate", title="Mortality rate per 100k"),
-    color="Country",
-    tooltip=["Rate"],
-).properties(
-    title=f"{cancer} mortality rates for {'males' if sex == 'M' else 'females'} in {year}",
-)
-
 chart = alt.Chart(subset).mark_rect().encode(
-    x=alt.X('Age:O', sort=ages, title="Age Group"),
+    x=alt.X("Age", sort=ages),
     y=alt.Y('Country:N', title="Country"),
-    color=alt.Color('Rate:Q', 
-                    scale=alt.Scale(type='log', domain=(0.01, 1000), clamp=True),
-                    title="Mortality rate per 100k"),
+    color=alt.Color('Rate:Q', title="Mortality rate per 100k",
+                scale=alt.Scale(type='log', domain=(0.01, 100), clamp=True)),
     tooltip=[alt.Tooltip('Rate:Q', title="Mortality Rate per 100k")]
 ).properties(
-    title=f"{cancer} mortality rates for {'males' if sex == 'M' else 'females'} in {year}"
+    title=f"{cancer_type} mortality rates for {'males' if sex == 'M' else 'females'} in {year}"
 )
 ### P2.5 ###
 
@@ -123,3 +114,6 @@ if len(countries_in_subset) != len(countries):
     else:
         missing = set(countries) - set(countries_in_subset)
         st.write("No data available for " + ", ".join(missing) + ".")
+
+
+
